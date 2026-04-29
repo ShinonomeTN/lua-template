@@ -1,5 +1,13 @@
 local template = {}
 
+--[[
+`loadstring` was deprecated since 5.2, use `load` instead
+(see: https://www.lua.org/manual/5.2/manual.html#8.2)
+]]--
+local loadstring = loadstring or function(str, chkn)
+  return load(str, chkn or str, 't')
+end
+
 function template.escape(data)
   return tostring(data == nil and "" or data):gsub("[\">/<'&]", {
     ["&"] = "&amp;",
