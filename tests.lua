@@ -19,10 +19,23 @@ describe("template module", function()
     end)
 
     it("minial template is functional", function()
-      local func = template.compile([[<? for i = 1, max do ?>.<?end?>]], true)
+      -- Add some spaces
+      local func = template.compile([[
+
+        <? for i = 1, max do ?>.<?end?>
+
+      ]], true)
       local output = {}
       template.print(func, { max = 10 }, function(s) table.insert(output, s) end)
-      assert.equal("..........", table.concat(output, ""))
+      assert.equal(" .......... ", table.concat(output, ""))
+    end)
+
+    it("xml escaping", function()
+      local data = { chars = { '&', '<', '>', '"', "'", '/' } }
+      local func = template.compile([[<? for i, v in ipairs(chars) do ?><% v %><? end ?>]], true)
+      local output = {}
+      template.print(func, data, function(s) table.insert(output, s) end)
+      assert.equal("&amp;&lt;&gt;&quot;&#39;&#47;", table.concat(output, ""))
     end)
 
     it("errors on invalid template", function()
