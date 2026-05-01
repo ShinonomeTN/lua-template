@@ -11,6 +11,19 @@ function template.escape(data)
   })
 end
 
+-- If it's lua 5.2+, _ENV will appears
+local wrapper_fn do
+  if not _ENV then goto finished; end
+
+  local wrapper, err = load(
+    [[return function(_ENV,exec,...) local f=...; f(exec, _ENV); end]],
+    "wrapper", "t"
+  )
+  if not wrapper then error(err) end
+  wrapper_fn = wrapper()
+  ::finished::
+end
+
 function template.print(data, args, callback)
   local callback = callback or print
   
@@ -23,14 +36,9 @@ function template.print(data, args, callback)
     end
     -- if type(data) == "function"
 
-    if _ENV then -- Lua 5.2+ uses _ENV
-      local wrapper, err = load(
-        [[return function(_ENV,exec,...) local f=...; f(exec, _ENV); end]],
-        "wrapper", "t", env
-      )
-      if not wrapper then error(err) end
-      wrapper()(env, exec, ins)
-      return
+    -- Lua 5.2+ , use call delegate
+    if wrapper_fn then
+      return wrapper_fn(env, exec, ins)
     end
 
     -- Lua 5.1
