@@ -1,0 +1,38 @@
+name: Run tests
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master, develop ]
+
+    jobs:
+      test-lua51:
+        runs-on: debian-latest
+        steps:
+          - uses: actions/checkout@v3
+          - name: Install Lua 5.1
+            run: |
+              sudo apt-get update
+              sudo apt-get install -y lua5.1 luarocks
+          - name: Verify Lua version
+            run: lua5.1 -v
+          - name: Install busted
+            run: luarocks install busted
+          - name: Run tests
+            run: lua5.1 tests.lua
+
+      test-lua52:
+        runs-on: debian-latest
+        steps:
+          - uses: actions/checkout@v3
+          - name: Install Lua 5.2
+            run: |
+              sudo apt-get update
+              sudo apt-get install -y lua5.2 luarocks
+          - name: Verify Lua version
+            run: lua5.2 -v
+          - name: Install busted
+            run: luarocks install busted
+          - name: Run tests
+            run: lua5.2 tests.lua
