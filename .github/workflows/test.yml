@@ -8,37 +8,37 @@ on:
 
 jobs:
   test-lua51:
-    runs-on: ubuntu-slim
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - name: Install Lua 5.1
         env: { DEBIAN_FRONTEND: noninteractive  }
         run: |
-          apt update
-          apt install -y lua5.1 luarocks
-          luarocks config lua_version 5.1
+          sudo apt update
+          sudo apt install -y lua5.1 luarocks
+          sudo luarocks config lua_version 5.1
       - name: Verify Lua version
         run: |
           lua -e 'if not _VERSION:find("^Lua 5.1") then os.exit(1) end'
       - name: Install busted
-        run: luarocks install busted
+        run: sudo luarocks install busted
       - name: Run tests
         run: lua tests.lua
 
   test-lua52:
-    runs-on: ubuntu-slim
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - name: Install Lua 5.2
         env: { DEBIAN_FRONTEND: noninteractive  }
         run: |
-          apt update
-          apt install -y lua5.2 liblua5.2-dev luarocks
-          luarocks config lua_version 5.2
+          sudo apt update
+          sudo apt install -y lua5.2 liblua5.2-dev luarocks
+          sudo luarocks config lua_version 5.2
       - name: Verify Lua version
         run: |
           lua -e 'if not _VERSION:find("^Lua 5.2") then os.exit(1) end'
       - name: Install busted
-        run: luarocks install busted
+        run: sudo luarocks install busted
       - name: Run tests
         run: lua tests.lua
