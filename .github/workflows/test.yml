@@ -2,37 +2,43 @@ name: Run tests
 
 on:
   push:
-    branches: [ main, master, develop ]
+    branches: [ 'github-action' ]
   pull_request:
-    branches: [ main, master, develop ]
+    branches: [ 'github-action' ]
 
-    jobs:
-      test-lua51:
-        runs-on: debian-latest
-        steps:
-          - uses: actions/checkout@v3
-          - name: Install Lua 5.1
-            run: |
-              sudo apt-get update
-              sudo apt-get install -y lua5.1 luarocks
-          - name: Verify Lua version
-            run: lua5.1 -v
-          - name: Install busted
-            run: luarocks install busted
-          - name: Run tests
-            run: lua5.1 tests.lua
+jobs:
+  test-lua51:
+    runs-on: ubuntu-slim
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install Lua 5.1
+        env: { DEBIAN_FRONTEND: noninteractive  }
+        run: |
+          apt update
+          apt install -y lua5.1 luarocks
+          luarocks config lua_version 5.1
+      - name: Verify Lua version
+        run: |
+          lua -e 'if not _VERSION:find("^Lua 5.1") then os.exit(1) end'
+      - name: Install busted
+        run: luarocks install busted
+      - name: Run tests
+        run: lua tests.lua
 
-      test-lua52:
-        runs-on: debian-latest
-        steps:
-          - uses: actions/checkout@v3
-          - name: Install Lua 5.2
-            run: |
-              sudo apt-get update
-              sudo apt-get install -y lua5.2 luarocks
-          - name: Verify Lua version
-            run: lua5.2 -v
-          - name: Install busted
-            run: luarocks install busted
-          - name: Run tests
-            run: lua5.2 tests.lua
+  test-lua52:
+    runs-on: ubuntu-slim
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install Lua 5.2
+        env: { DEBIAN_FRONTEND: noninteractive  }
+        run: |
+          apt update
+          apt install -y lua5.2 liblua5.2-dev luarocks
+          luarocks config lua_version 5.2
+      - name: Verify Lua version
+        run: |
+          lua -e 'if not _VERSION:find("^Lua 5.2") then os.exit(1) end'
+      - name: Install busted
+        run: luarocks install busted
+      - name: Run tests
+        run: lua tests.lua
