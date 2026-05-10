@@ -13,15 +13,14 @@ end
 
 -- If it's lua 5.2+, _ENV will appears
 local wrapper_fn do
-  if not _ENV then goto finished; end
-
-  local wrapper, err = load(
-    [[return function(_ENV,exec,...) local f=...; f(exec, _ENV); end]],
-    "wrapper", "t"
-  )
-  if not wrapper then error(err) end
-  wrapper_fn = wrapper()
-  ::finished::
+  if _ENV then 
+    local wrapper, err = load(
+      [[return function(_ENV,exec,...) local f=...; f(exec, _ENV); end]],
+      "wrapper", "t"
+    )
+    if not wrapper then error(err) end
+    wrapper_fn = wrapper()
+  end
 end
 
 function template.print(data, args, callback)
